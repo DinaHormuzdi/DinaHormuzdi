@@ -1,4 +1,5 @@
-Hi! I’m Dina 😄
+Hi! I'm Dina 😄
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=40&section=header&animation=twinkling" width="400" />
 
 I love being at the intersection of technology, business, and design. Right now, I’m in the world of AI at Artificial Analysis, where I help evaluate and benchmark media generation models.
 
