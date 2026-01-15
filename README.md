@@ -1,4 +1,4 @@
-## Hi! I’m Dina 😄
+Hi! I’m Dina 😄
 
 I love being at the intersection of technology, business, and design. Right now, I’m in the world of AI at Artificial Analysis, where I help evaluate and benchmark media generation models.
 
