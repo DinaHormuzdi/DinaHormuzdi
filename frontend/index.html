@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dina Bot</title>
+    <meta
+      name="description"
+      content="Dina Bot is a minimal chat interface with a calm dark theme."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="center">
+        <p class="badge">Dina Bot</p>
+        <h1>Hey, what's on your mind today?</h1>
+        <p class="subcopy">
+          A minimal chat space for focused questions, fast answers, and zero noise.
+        </p>
+
+        <div class="chatbox">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="Message Dina Bot"
+            aria-label="Message Dina Bot"
+          />
+          <button class="send-button" id="send-button" type="button">Send</button>
+        </div>
+
+        <div class="response" id="response" aria-live="polite"></div>
+
+        <p class="helper">Press enter to send. Dina keeps it short and helpful.</p>
+      </section>
+    </main>
+    <script>
+      const input = document.getElementById("chat-input");
+      const sendButton = document.getElementById("send-button");
+      const response = document.getElementById("response");
+
+      const API_URL = "/chat";
+
+      const sendMessage = async () => {
+        const message = input.value.trim();
+        if (!message) return;
+
+        response.textContent = "Thinking...";
+        sendButton.disabled = true;
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            response.textContent =
+              data.error || `Request failed (${res.status}). Check backend logs.`;
+            return;
+          }
+          response.textContent = data.reply || "No response received.";
+          input.value = "";
+        } catch (error) {
+          response.textContent = "Could not reach the backend.";
+        } finally {
+          sendButton.disabled = false;
+        }
+      };
+
+      sendButton.addEventListener("click", sendMessage);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>

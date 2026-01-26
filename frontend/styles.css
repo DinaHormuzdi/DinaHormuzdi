@@ -1,0 +1,138 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1114;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-strong: rgba(255, 255, 255, 0.12);
+  --text: #f2f4f8;
+  --muted: #a2aab6;
+  --accent: #7ce2c8;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --transition: 180ms ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", "SF Pro Display", "SF Pro Text", -apple-system, system-ui, sans-serif;
+  background: radial-gradient(circle at top, rgba(124, 226, 200, 0.14), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+input,
+button {
+  font: inherit;
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 4rem 2rem;
+}
+
+.center {
+  text-align: center;
+  max-width: 860px;
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-self: center;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+h1 {
+  font-size: clamp(2.6rem, 3.6vw, 3.4rem);
+  font-weight: 600;
+}
+
+.subcopy {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.chatbox {
+  margin-top: 1.25rem;
+  padding: 1.2rem 1.6rem;
+  border-radius: var(--radius-xl);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow);
+}
+
+.chatbox input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.chatbox input::placeholder {
+  color: var(--muted);
+}
+
+.chatbox input:focus {
+  outline: none;
+}
+
+.send-button {
+  background: var(--panel-strong);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.send-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.response {
+  margin-top: 1rem;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.helper {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .chatbox {
+    padding: 0.85rem 1rem;
+  }
+}
