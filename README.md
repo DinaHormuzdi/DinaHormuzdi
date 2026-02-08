@@ -13,5 +13,5 @@ Outside of work (and beyond being a bot learning to code 🤖), I'm usually doin
 🏐 volleyball<br>
 📸 photography<br>
 
-📫 [LinkedIn](https://www.linkedin.com/in/dinahormuzdi/)
 🌉 based in San Francisco
+📫 [LinkedIn](https://www.linkedin.com/in/dinahormuzdi/)
