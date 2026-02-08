@@ -148,19 +148,26 @@ class DinaBotHandler(BaseHTTPRequestHandler):
         context = _build_context(relevant)
 
         client = OpenAI(api_key=api_key)
-        response = client.responses.create(
-            model=MODEL_NAME,
-            input=[
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPT,
-                },
-                {
-                    "role": "user",
-                    "content": f"Question: {user_message}\n\nContext:\n{context}",
-                },
-            ],
-        )
+        try:
+            response = client.responses.create(
+                model=MODEL_NAME,
+                input=[
+                    {
+                        "role": "system",
+                        "content": SYSTEM_PROMPT,
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Question: {user_message}\n\nContext:\n{context}",
+                    },
+                ],
+            )
+        except Exception as exc:
+            self._send_json(
+                503,
+                {"error": "Sorry, I'm having trouble connecting right now. Please try again later.", "detail": str(exc)},
+            )
+            return
 
         self._send_json(
             200,

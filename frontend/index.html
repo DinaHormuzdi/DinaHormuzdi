@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dina Bot</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
     <meta
       name="description"
       content="Dina Bot is a minimal chat interface with a calm dark theme."
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <!-- Landing page -->
     <main class="page">
       <section class="center">
         <p class="badge">Dina Bot</p>
@@ -21,32 +23,96 @@
 
         <div class="chatbox">
           <input
-            id="chat-input"
+            id="home-input"
             type="text"
             placeholder="Message Dina Bot"
             aria-label="Message Dina Bot"
           />
-          <button class="send-button" id="send-button" type="button">Send</button>
+          <button class="home-send-button" id="home-send-button" type="button">Send</button>
         </div>
-
-        <div class="response" id="response" aria-live="polite"></div>
 
         <p class="helper">Press enter to send. Dina keeps it short and helpful.</p>
       </section>
     </main>
+
+    <!-- Backdrop overlay -->
+    <div class="chat-backdrop" id="chat-backdrop"></div>
+
+    <!-- Chat widget panel (hidden until first message) -->
+    <div class="chat-widget" id="chat-widget">
+      <div class="widget-header">
+        <div class="avatar">D</div>
+        <div class="header-info">
+          <h2>Dina Bot</h2>
+          <p>Ask me anything about Dina</p>
+        </div>
+        <button class="close-button" id="close-widget" aria-label="Close chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <div class="chat-input-bar">
+        <input
+          id="chat-input"
+          type="text"
+          placeholder="Message Dina Bot..."
+          aria-label="Message Dina Bot"
+        />
+        <button class="send-button" id="send-button" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <script>
-      const input = document.getElementById("chat-input");
+      const homeInput = document.getElementById("home-input");
+      const homeSendButton = document.getElementById("home-send-button");
+      const chatInput = document.getElementById("chat-input");
       const sendButton = document.getElementById("send-button");
-      const response = document.getElementById("response");
+      const messagesContainer = document.getElementById("chat-messages");
+      const chatWidget = document.getElementById("chat-widget");
+      const closeWidget = document.getElementById("close-widget");
+      const backdrop = document.getElementById("chat-backdrop");
 
       const API_URL = "/chat";
 
-      const sendMessage = async () => {
-        const message = input.value.trim();
-        if (!message) return;
+      const openWidget = () => {
+        chatWidget.classList.add("open");
+        backdrop.classList.add("open");
+      };
 
-        response.textContent = "Thinking...";
-        sendButton.disabled = true;
+      const closeChat = () => {
+        chatWidget.classList.remove("open");
+        backdrop.classList.remove("open");
+      };
+
+      closeWidget.addEventListener("click", closeChat);
+      backdrop.addEventListener("click", closeChat);
+
+      const addMessage = (text, sender) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = `message ${sender}`;
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+        wrapper.appendChild(bubble);
+        messagesContainer.appendChild(wrapper);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return bubble;
+      };
+
+      const sendMessage = async (message) => {
+        addMessage(message, "user");
+
+        const thinkingBubble = addMessage("Thinking...", "bot typing");
 
         try {
           const res = await fetch(API_URL, {
@@ -56,24 +122,54 @@
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok) {
-            response.textContent =
-              data.error || `Request failed (${res.status}). Check backend logs.`;
+            thinkingBubble.textContent =
+              data.error || "Something went wrong. Please try again.";
+            thinkingBubble.parentElement.classList.remove("typing");
             return;
           }
-          response.textContent = data.reply || "No response received.";
-          input.value = "";
+          thinkingBubble.textContent = data.reply || "No response received.";
+          thinkingBubble.parentElement.classList.remove("typing");
         } catch (error) {
-          response.textContent = "Could not reach the backend.";
+          thinkingBubble.textContent = "Could not reach the backend.";
+          thinkingBubble.parentElement.classList.remove("typing");
         } finally {
           sendButton.disabled = false;
+          chatInput.focus();
         }
       };
 
-      sendButton.addEventListener("click", sendMessage);
-      input.addEventListener("keydown", (event) => {
+      // Send from home page input — opens the widget
+      const sendFromHome = () => {
+        const message = homeInput.value.trim();
+        if (!message) return;
+        homeInput.value = "";
+        openWidget();
+        sendButton.disabled = true;
+        sendMessage(message);
+      };
+
+      homeSendButton.addEventListener("click", sendFromHome);
+      homeInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           event.preventDefault();
-          sendMessage();
+          sendFromHome();
+        }
+      });
+
+      // Send from widget input
+      const sendFromWidget = () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        chatInput.value = "";
+        sendButton.disabled = true;
+        sendMessage(message);
+      };
+
+      sendButton.addEventListener("click", sendFromWidget);
+      chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          sendFromWidget();
         }
       });
     </script>
